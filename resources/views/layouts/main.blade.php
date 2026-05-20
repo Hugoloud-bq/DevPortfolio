@@ -182,6 +182,54 @@
         .dark-theme .rounded-circle {
             border: 3px solid #1a1a2e !important;
         }
+        /* ===== СВЕТЛЫЙ ТЕКСТ ДЛЯ ФИЛЬТРОВ И СОРТИРОВКИ В ТЁМНОЙ ТЕМЕ ===== */
+.dark-theme .mb-3 span,
+.dark-theme .mb-3 .btn,
+.dark-theme .mb-4 .btn,
+.dark-theme .form-control::placeholder {
+    color: #fff !important;
+}
+
+.dark-theme .form-control {
+    background-color: #2a2a3a !important;
+    color: #fff !important;
+    border-color: #5a5a6e !important;
+}
+
+.dark-theme .form-control:focus {
+    background-color: #2a2a3a !important;
+    color: #fff !important;
+}
+
+.dark-theme .btn-secondary {
+    background-color: #4a4a5a !important;
+    border-color: #4a4a5a !important;
+    color: #fff !important;
+}
+
+.dark-theme .btn-outline-primary,
+.dark-theme .btn-outline-secondary,
+.dark-theme .btn-outline-success,
+.dark-theme .btn-outline-info,
+.dark-theme .btn-outline-warning {
+    color: #fff !important;
+    border-color: #fff !important;
+}
+
+.dark-theme .btn-outline-primary:hover,
+.dark-theme .btn-outline-secondary:hover,
+.dark-theme .btn-outline-success:hover,
+.dark-theme .btn-outline-info:hover,
+.dark-theme .btn-outline-warning:hover {
+    background-color: #fff !important;
+    color: #000 !important;
+}
+
+.dark-theme .btn-primary {
+    background-color: #667eea !important;
+    border-color: #667eea !important;
+    color: #fff !important;
+}
     </style>
 </head>
 <body>

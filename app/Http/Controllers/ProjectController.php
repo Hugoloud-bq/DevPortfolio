@@ -8,24 +8,42 @@ use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
-    public function index(Request $request)
+public function index(Request $request)
 {
     $query = DB::table('projects')
         ->where('user_id', session('user_id'));
     
-
+    // Фильтр по статусу
+    if ($request->filled('status')) {
+        switch ($request->status) {
+            case 'tz':
+                $query->where('tz_status', 1);
+                break;
+            case 'report':
+                $query->where('report_status', 1);
+                break;
+            case 'diary':
+                $query->where('diary_status', 1);
+                break;
+        }
+    }
+    
+    // Поиск по названию
+    if ($request->filled('search')) {
+        $query->where('title', 'like', '%' . $request->search . '%');
+    }
+    
+    // Сортировка по дате
     $sort = $request->get('sort', 'desc');
+    if ($sort !== 'asc' && $sort !== 'desc') {
+        $sort = 'desc';
+    }
     $query->orderBy('created_at', $sort);
     
     $projects = $query->get();
     
     return view('projects', compact('projects'));
 }
-
-    public function create()
-    {
-        return view('create-project');
-    }
 
 public function store(Request $request)
 {
@@ -74,6 +92,39 @@ public function store(Request $request)
     return redirect('/projects')->with('success', 'Новый проект добавлен!');
 }
 
+public function exportToExcel()
+{
+    $projects = DB::table('projects')
+        ->where('user_id', session('user_id'))
+        ->get();
+
+    $html = '<html><head><meta charset="UTF-8"><title>Мои проекты</title></head><body>';
+    $html .= '<h2>Список проектов</h2>';
+    $html .= '<table border="1" cellpadding="5" cellspacing="0">';
+    $html .= '<tr style="background-color:#f2f2f2;">';
+    $html .= '<th>Название</th><th>Предмет</th><th>Описание</th><th>Часы</th><th>ТЗ сдано</th><th>Отчёт сдан</th><th>Дневник сдан</th><th>Дата создания</th>';
+    $html .= '</tr>';
+    
+    foreach ($projects as $p) {
+        $html .= '<tr>';
+        $html .= '<td>' . htmlspecialchars($p->title) . '</td>';
+        $html .= '<td>' . htmlspecialchars($p->subject) . '</td>';
+        $html .= '<td>' . htmlspecialchars($p->description ?? '—') . '</td>';
+        $html .= '<td>' . ($p->hours_spent ?? '—') . '</td>';
+        $html .= '<td>' . ($p->tz_status ? 'Да' : 'Нет') . '</td>';
+        $html .= '<td>' . ($p->report_status ? 'Да' : 'Нет') . '</td>';
+        $html .= '<td>' . ($p->diary_status ? 'Да' : 'Нет') . '</td>';
+        $html .= '<td>' . date('d.m.Y', strtotime($p->created_at)) . '</td>';
+        $html .= '</tr>';
+    }
+    
+    $html .= '</table></body></html>';
+    
+    return response($html, 200, [
+        'Content-Type' => 'application/vnd.ms-excel',
+        'Content-Disposition' => 'attachment; filename="projects_' . date('Y-m-d') . '.xls"',
+    ]);
+}
 
     public function edit($id)
     {

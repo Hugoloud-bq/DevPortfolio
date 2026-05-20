@@ -3,14 +3,48 @@
 @section('title', 'Мои проекты')
 
 @section('content')
+<div class="container">
 
-<!-- Фильтр по дате -->
-<div class="mb-4">
-    <div class="btn-group" role="group">
-        <a href="{{ route('projects', ['sort' => 'desc']) }}" class="btn btn-sm {{ request('sort') != 'asc' ? 'btn-primary' : 'btn-outline-primary' }}">📅 Сначала новые</a>
-        <a href="{{ route('projects', ['sort' => 'asc']) }}" class="btn btn-sm {{ request('sort') == 'asc' ? 'btn-primary' : 'btn-outline-primary' }}">📅 Сначала старые</a>
+<!-- Поиск по названию -->
+<form method="GET" action="{{ route('projects') }}" class="mb-3">
+    <div class="row g-2">
+        <div class="col-md-8">
+            <input type="text" name="search" class="form-control" placeholder="Поиск по названию..." value="{{ request('search') }}">
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary w-100">Найти</button>
+        </div>
+    </div>
+    <input type="hidden" name="status" value="{{ request('status') }}">
+    <input type="hidden" name="sort" value="{{ request('sort') }}">
+</form>
+
+<!-- Фильтр по статусу -->
+<div class="mb-3">
+    <span class="me-2">Фильтр по статусу:</span>
+    <a href="{{ route('projects', ['sort' => request('sort')]) }}" class="btn btn-sm btn-secondary">Все</a>
+    <a href="{{ route('projects', ['status' => 'tz', 'sort' => request('sort')]) }}" class="btn btn-sm btn-success">ТЗ сдано</a>
+    <a href="{{ route('projects', ['status' => 'report', 'sort' => request('sort')]) }}" class="btn btn-sm btn-info">Отчёт сдан</a>
+    <a href="{{ route('projects', ['status' => 'diary', 'sort' => request('sort')]) }}" class="btn btn-sm btn-warning">Дневник сдан</a>
+</div>
+
+<!-- Сортировка по дате -->
+<div class="mb-3">
+    <span class="me-2">Сортировка:</span>
+    <div class="btn-group">
+        <a href="{{ route('projects', ['sort' => 'desc', 'status' => request('status'), 'search' => request('search')]) }}" class="btn btn-sm {{ request('sort') != 'asc' ? 'btn-primary' : 'btn-outline-primary' }}">Сначала новые</a>
+        <a href="{{ route('projects', ['sort' => 'asc', 'status' => request('status'), 'search' => request('search')]) }}" class="btn btn-sm {{ request('sort') == 'asc' ? 'btn-primary' : 'btn-outline-primary' }}">Сначала старые</a>
     </div>
 </div>
+
+    <!-- ===== КНОПКА ЭКСПОРТА ===== -->
+    <div class="mb-3 text-end">
+        <a href="{{ route('projects.export-excel') }}" class="btn btn-success">
+            <i class="fas fa-file-excel me-1"></i>  Экспорт в Excel
+        </a>
+    </div>
+
+    <!-- ===== ЗАГОЛОВОК И КНОПКА ДОБАВЛЕНИЯ ===== -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-folder-open me-2"></i>Мои проекты</h2>
         <a href="{{ route('projects.create') }}" class="btn btn-primary">
