@@ -182,54 +182,31 @@
         .dark-theme .rounded-circle {
             border: 3px solid #1a1a2e !important;
         }
-        /* ===== СВЕТЛЫЙ ТЕКСТ ДЛЯ ФИЛЬТРОВ И СОРТИРОВКИ В ТЁМНОЙ ТЕМЕ ===== */
-.dark-theme .mb-3 span,
-.dark-theme .mb-3 .btn,
-.dark-theme .mb-4 .btn,
-.dark-theme .form-control::placeholder {
-    color: #fff !important;
-}
-
-.dark-theme .form-control {
-    background-color: #2a2a3a !important;
-    color: #fff !important;
-    border-color: #5a5a6e !important;
-}
-
-.dark-theme .form-control:focus {
-    background-color: #2a2a3a !important;
-    color: #fff !important;
-}
-
-.dark-theme .btn-secondary {
-    background-color: #4a4a5a !important;
-    border-color: #4a4a5a !important;
-    color: #fff !important;
-}
-
-.dark-theme .btn-outline-primary,
-.dark-theme .btn-outline-secondary,
-.dark-theme .btn-outline-success,
-.dark-theme .btn-outline-info,
-.dark-theme .btn-outline-warning {
-    color: #fff !important;
-    border-color: #fff !important;
-}
-
-.dark-theme .btn-outline-primary:hover,
-.dark-theme .btn-outline-secondary:hover,
-.dark-theme .btn-outline-success:hover,
-.dark-theme .btn-outline-info:hover,
-.dark-theme .btn-outline-warning:hover {
-    background-color: #fff !important;
-    color: #000 !important;
-}
-
-.dark-theme .btn-primary {
-    background-color: #667eea !important;
-    border-color: #667eea !important;
-    color: #fff !important;
-}
+        .dark-theme .mb-3 span,
+        .dark-theme .mb-3 .btn,
+        .dark-theme .mb-4 .btn,
+        .dark-theme .form-control::placeholder {
+            color: #fff !important;
+        }
+        .dark-theme .form-control {
+            background-color: #2a2a3a !important;
+            color: #fff !important;
+            border-color: #5a5a6e !important;
+        }
+        .dark-theme .form-control:focus {
+            background-color: #2a2a3a !important;
+            color: #fff !important;
+        }
+        .dark-theme .btn-secondary {
+            background-color: #4a4a5a !important;
+            border-color: #4a4a5a !important;
+            color: #fff !important;
+        }
+        .dark-theme .btn-primary {
+            background-color: #667eea !important;
+            border-color: #667eea !important;
+            color: #fff !important;
+        }
     </style>
 </head>
 <body>
@@ -253,6 +230,15 @@
                                 @csrf
                                 <button type="submit" class="btn btn-link nav-link">Выйти ({{ session('user_name') }})</button>
                             </form>
+                        </li>
+                        <!-- Счётчик проектов -->
+                        @php
+                            $projectCount = DB::table('projects')->where('user_id', session('user_id'))->count();
+                        @endphp
+                        <li class="nav-item ms-2">
+                            <span class="badge bg-primary rounded-pill">
+                                <i class="fas fa-folder-open me-1"></i> Проектов: {{ $projectCount }}
+                            </span>
                         </li>
                     @else
                         <li class="nav-item"><a class="nav-link" href="/login">Вход</a></li>
@@ -283,27 +269,41 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const themeToggle = document.getElementById('themeToggle');
-        if (themeToggle) {
-            const icon = themeToggle.querySelector('i');
-            if (localStorage.getItem('theme') === 'dark') {
-                document.body.classList.add('dark-theme');
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-            }
-            themeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark-theme');
-                if (document.body.classList.contains('dark-theme')) {
-                    localStorage.setItem('theme', 'dark');
-                    icon.classList.remove('fa-moon');
-                    icon.classList.add('fa-sun');
-                } else {
-                    localStorage.setItem('theme', 'light');
-                    icon.classList.remove('fa-sun');
-                    icon.classList.add('fa-moon');
-                }
-            });
+const themeToggle = document.getElementById('themeToggle');
+if (themeToggle) {
+    const icon = themeToggle.querySelector('i');
+    
+    // Читаем тему из cookie при загрузке
+    const getCookie = (name) => {
+        let matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    };
+    
+    let savedTheme = getCookie('theme') || localStorage.getItem('theme');
+    
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+    }
+    
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-theme');
+        const newTheme = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
+        localStorage.setItem('theme', newTheme);
+        document.cookie = "theme=" + newTheme + "; path=/";
+        
+        if (document.body.classList.contains('dark-theme')) {
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        } else {
+            icon.classList.remove('fa-sun');
+            icon.classList.add('fa-moon');
         }
+    });
+}
     </script>
 </body>
 </html>

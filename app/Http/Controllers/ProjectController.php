@@ -45,6 +45,20 @@ public function index(Request $request)
     return view('projects', compact('projects'));
 }
 
+public function exportToPdf()
+{
+    $projects = DB::table('projects')
+        ->where('user_id', session('user_id'))
+        ->get();
+
+    $html = view('projects-pdf', compact('projects'))->render();
+    
+    return response($html, 200, [
+        'Content-Type' => 'text/html',
+        'Content-Disposition' => 'inline; filename="projects_' . date('Y-m-d') . '.html"',
+    ]);
+}
+
 public function store(Request $request)
 {
     $request->validate([

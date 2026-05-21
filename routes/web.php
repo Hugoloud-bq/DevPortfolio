@@ -29,11 +29,14 @@ Route::get('/dashboard', function () {
 })->name('dashboard');
 
 Route::get('/projects/export-excel', [ProjectController::class, 'exportToExcel'])->name('projects.export-excel');
-
+Route::get('/projects/export-pdf', [ProjectController::class, 'exportToPdf'])->name('projects.export-pdf');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
+Route::post('/save-theme', function (Request $request) {
+    session(['theme' => $request->theme]);
+    return response()->json(['success' => true]);
+});
 Route::middleware('auth.session')->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects');
     Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
